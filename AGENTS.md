@@ -25,7 +25,9 @@ Consult these guides before working on related tasks:
 
 - Divide each substantial task into meaningful, independently verifiable milestones.
 - Before implementation, identify the milestones that will produce commits.
-- After completing each milestone, run the relevant checks and review both `git status` and the diff.
+- After completing each milestone, run checks proportional to the risk and review both `git status` and the diff.
+- Do not run a full build after every milestone by default. Group purely visual changes and build after roughly two visual features, before the final hand-off, or when a technical change makes it necessary.
+- Do not start the development server or open a browser for visual inspection unless the change genuinely needs runtime or visual verification.
 - Stage only the files changed for that milestone, using explicit paths. Do not use `git add .` or `git add -A`.
 - Commit each completed milestone with a descriptive Conventional Commits message.
 - For a small task, create one commit after the task is complete and verified.
