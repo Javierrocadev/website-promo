@@ -31,7 +31,7 @@ export function setupPromoAnimation(
 		return null;
 	}
 
-	let timeline: gsap.core.Timeline;
+	let timeline: ReturnType<typeof gsap.timeline> | undefined;
 	const context = gsap.context(() => {
 		timeline = gsap.timeline({
 			paused: true,
@@ -54,17 +54,23 @@ export function setupPromoAnimation(
 			.to(stage, { duration: 2.1 });
 	}, stage);
 
+	if (!timeline) {
+		context.revert();
+		return null;
+	}
+	const promoTimeline = timeline;
+
 	return {
 		play: () => {
-			if (timeline.progress() >= 1) timeline.restart();
-			else timeline.play();
+			if (promoTimeline.progress() >= 1) promoTimeline.restart();
+			else promoTimeline.play();
 		},
-		pause: () => timeline.pause(),
-		reset: () => timeline.pause(0, true),
-		showFinal: () => timeline.pause().progress(1, true),
-		isPlaying: () => timeline.isActive(),
-		isComplete: () => timeline.progress() >= 1,
-		isAtStart: () => timeline.time() === 0,
+		pause: () => promoTimeline.pause(),
+		reset: () => promoTimeline.pause(0, true),
+		showFinal: () => promoTimeline.pause().progress(1, true),
+		isPlaying: () => promoTimeline.isActive(),
+		isComplete: () => promoTimeline.progress() >= 1,
+		isAtStart: () => promoTimeline.time() === 0,
 		destroy: () => context.revert(),
 	};
 }

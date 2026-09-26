@@ -43,7 +43,10 @@ function readStoredConfig(): PromoConfig {
 		const candidate = parsed as Partial<PromoConfig>;
 
 		return {
-			url: typeof candidate.url === 'string' ? candidate.url : DEFAULT_CONFIG.url,
+			url:
+				typeof candidate.url === 'string'
+					? (normalizeUrl(candidate.url) ?? DEFAULT_CONFIG.url)
+					: DEFAULT_CONFIG.url,
 			backgroundColor:
 				typeof candidate.backgroundColor === 'string' && HEX_COLOR.test(candidate.backgroundColor)
 					? candidate.backgroundColor.toUpperCase()
@@ -199,6 +202,10 @@ function initializeEditor(): void {
 		config = nextConfig;
 		stage.style.setProperty('--stage-background', config.backgroundColor);
 		stage.style.setProperty('--stage-text', config.textColor);
+		stage.style.setProperty(
+			'--stage-title-size',
+			config.title.length > 32 ? '82px' : config.title.length > 20 ? '96px' : '112px',
+		);
 		titlePreview.textContent = config.title || ' ';
 		brandPreview.textContent = config.brand.trim();
 		brandPreview.hidden = config.brand.trim().length === 0;
@@ -315,6 +322,15 @@ function initializeEditor(): void {
 		}
 	});
 
+	const handleFullscreenChange = () => {
+		if (document.fullscreenElement) return;
+		if (!config.animationEnabled) setStatus('Composición fija');
+		else if (animationController?.isComplete()) setStatus('Animación completada');
+		else if (animationController?.isPlaying()) setStatus('Reproduciendo');
+		else setStatus('Vista previa lista');
+	};
+	document.addEventListener('fullscreenchange', handleFullscreenChange);
+
 	bindColorControls(backgroundPicker, backgroundHex, 'backgroundColor');
 	bindColorControls(textPicker, textHex, 'textColor');
 	applyConfig(config, true);
@@ -331,6 +347,7 @@ function initializeEditor(): void {
 
 	window.addEventListener('pagehide', () => {
 		cancelCountdown();
+		document.removeEventListener('fullscreenchange', handleFullscreenChange);
 		animationController?.destroy();
 		stageController?.destroy();
 	}, { once: true });
