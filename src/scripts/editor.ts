@@ -1,3 +1,4 @@
+import { setupPromoAnimation, type PromoAnimationController } from './animation';
 import { setupStage } from './stage';
 
 export interface PromoConfig {
@@ -113,19 +114,71 @@ function initializeEditor(): void {
 	const textHex = getElement<HTMLInputElement>('[data-text-hex]');
 	const staticToggle = getElement<HTMLInputElement>('[data-static-toggle]');
 	const countdownToggle = getElement<HTMLInputElement>('[data-countdown-toggle]');
+	const playButton = getElement<HTMLButtonElement>('[data-action="play"]');
+	const pauseButton = getElement<HTMLButtonElement>('[data-action="pause"]');
+	const restartButton = getElement<HTMLButtonElement>('[data-action="restart"]');
+	const fullscreenButton = getElement<HTMLButtonElement>('[data-action="fullscreen"]');
 	const resetButton = getElement<HTMLButtonElement>('[data-action="reset"]');
+	const countdown = getElement<HTMLElement>('[data-stage-countdown]');
 	const status = getElement<HTMLElement>('[data-stage-status]');
 
-	if (!stage || !titlePreview || !brandPreview || !titleInput || !brandInput || !urlForm || !urlInput || !urlError || !iframe || !emptyState || !browserAddress || !backgroundPicker || !backgroundHex || !textPicker || !textHex || !staticToggle || !countdownToggle || !resetButton) {
+	if (!stage || !titlePreview || !brandPreview || !titleInput || !brandInput || !urlForm || !urlInput || !urlError || !iframe || !emptyState || !browserAddress || !backgroundPicker || !backgroundHex || !textPicker || !textHex || !staticToggle || !countdownToggle || !playButton || !pauseButton || !restartButton || !fullscreenButton || !resetButton || !countdown) {
 		console.warn('No se pudo inicializar el editor: faltan elementos de la interfaz.');
 		stageController?.destroy();
 		return;
 	}
 
 	let config = readStoredConfig();
+	let animationController: PromoAnimationController | null = null;
+	let countdownTimer: number | null = null;
+	let countdownRunning = false;
 
 	const setStatus = (message: string) => {
 		if (status) status.textContent = message;
+	};
+
+	const updatePlaybackButtons = () => {
+		const animationUnavailable = !config.animationEnabled || !animationController;
+		playButton.disabled = animationUnavailable || countdownRunning || Boolean(animationController?.isPlaying());
+		pauseButton.disabled = animationUnavailable || (!countdownRunning && !animationController?.isPlaying());
+		restartButton.disabled = animationUnavailable;
+		fullscreenButton.disabled = !stageController?.isFullscreenAvailable;
+	};
+
+	const cancelCountdown = () => {
+		if (countdownTimer !== null) window.clearInterval(countdownTimer);
+		countdownTimer = null;
+		countdownRunning = false;
+		countdown.hidden = true;
+		countdown.textContent = '';
+		updatePlaybackButtons();
+	};
+
+	const playTimeline = () => {
+		if (!animationController || !config.animationEnabled) return;
+		animationController.play();
+		setStatus('Reproduciendo');
+		updatePlaybackButtons();
+	};
+
+	const startCountdown = () => {
+		if (countdownRunning) return;
+		let remaining = 3;
+		countdownRunning = true;
+		countdown.hidden = false;
+		countdown.textContent = String(remaining);
+		setStatus('Cuenta atrás');
+		updatePlaybackButtons();
+
+		countdownTimer = window.setInterval(() => {
+			remaining -= 1;
+			if (remaining <= 0) {
+				cancelCountdown();
+				playTimeline();
+				return;
+			}
+			countdown.textContent = String(remaining);
+		}, 1000);
 	};
 
 	const showEmptyState = () => {
@@ -161,6 +214,7 @@ function initializeEditor(): void {
 		countdownToggle.disabled = !config.animationEnabled;
 		if (titleCount) titleCount.textContent = String(config.title.length);
 		if (loadSavedUrl && config.url) loadWebsite(config.url);
+		updatePlaybackButtons();
 	};
 
 	const updateConfig = (partial: Partial<PromoConfig>) => {
@@ -204,13 +258,19 @@ function initializeEditor(): void {
 	brandInput.addEventListener('input', () => updateConfig({ brand: brandInput.value.slice(0, 32) }));
 
 	staticToggle.addEventListener('change', () => {
+		cancelCountdown();
 		updateConfig({ animationEnabled: !staticToggle.checked });
+		if (staticToggle.checked) animationController?.showFinal();
+		else animationController?.reset();
 		setStatus(staticToggle.checked ? 'Composición fija' : 'Animación preparada');
+		updatePlaybackButtons();
 	});
 
 	countdownToggle.addEventListener('change', () => updateConfig({ countdownEnabled: countdownToggle.checked }));
 
 	resetButton.addEventListener('click', () => {
+		cancelCountdown();
+		animationController?.reset();
 		config = { ...DEFAULT_CONFIG };
 		applyConfig(config);
 		showEmptyState();
@@ -220,12 +280,60 @@ function initializeEditor(): void {
 		setStatus('Diseño restablecido');
 	});
 
+	playButton.addEventListener('click', () => {
+		if (!animationController || !config.animationEnabled) return;
+		if (animationController.isComplete()) animationController.reset();
+		if (config.countdownEnabled && animationController.isAtStart()) startCountdown();
+		else playTimeline();
+	});
+
+	pauseButton.addEventListener('click', () => {
+		if (countdownRunning) {
+			cancelCountdown();
+			setStatus('Animación preparada');
+		} else {
+			animationController?.pause();
+			setStatus('En pausa');
+		}
+		updatePlaybackButtons();
+	});
+
+	restartButton.addEventListener('click', () => {
+		cancelCountdown();
+		animationController?.reset();
+		setStatus('Animación preparada');
+		updatePlaybackButtons();
+	});
+
+	fullscreenButton.addEventListener('click', async () => {
+		try {
+			await stageController?.enterFullscreen();
+			setStatus('Pantalla completa');
+		} catch (error) {
+			console.warn('No se pudo activar la pantalla completa.', error);
+			setStatus('Pantalla completa no disponible');
+		}
+	});
+
 	bindColorControls(backgroundPicker, backgroundHex, 'backgroundColor');
 	bindColorControls(textPicker, textHex, 'textColor');
 	applyConfig(config, true);
-	setStatus('Vista previa lista');
+	animationController = setupPromoAnimation({
+		onComplete: () => {
+			setStatus('Animación completada');
+			updatePlaybackButtons();
+		},
+	});
+	if (config.animationEnabled) animationController?.reset();
+	else animationController?.showFinal();
+	updatePlaybackButtons();
+	setStatus(config.animationEnabled ? 'Animación preparada' : 'Composición fija');
 
-	window.addEventListener('pagehide', () => stageController?.destroy(), { once: true });
+	window.addEventListener('pagehide', () => {
+		cancelCountdown();
+		animationController?.destroy();
+		stageController?.destroy();
+	}, { once: true });
 }
 
 initializeEditor();

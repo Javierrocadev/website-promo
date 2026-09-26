@@ -3,6 +3,8 @@ const DESIGN_HEIGHT = 1080;
 
 export interface StageController {
 	refresh: () => void;
+	enterFullscreen: () => Promise<void>;
+	isFullscreenAvailable: boolean;
 	destroy: () => void;
 }
 
@@ -30,8 +32,39 @@ export function setupStage(): StageController | null {
 	observer.observe(viewport);
 	refresh();
 
+	let cursorTimer: number | null = null;
+
+	const showCursorTemporarily = () => {
+		viewport.classList.remove('is-cursor-hidden');
+		if (cursorTimer !== null) window.clearTimeout(cursorTimer);
+		if (document.fullscreenElement === viewport) {
+			cursorTimer = window.setTimeout(() => {
+				viewport.classList.add('is-cursor-hidden');
+			}, 2000);
+		}
+	};
+
+	const handleFullscreenChange = () => {
+		showCursorTemporarily();
+		window.requestAnimationFrame(refresh);
+	};
+
+	viewport.addEventListener('pointermove', showCursorTemporarily);
+	document.addEventListener('fullscreenchange', handleFullscreenChange);
+
 	return {
 		refresh,
-		destroy: () => observer.disconnect(),
+		enterFullscreen: async () => {
+			if (!document.fullscreenEnabled) throw new Error('La pantalla completa no está disponible.');
+			if (document.fullscreenElement === viewport) return;
+			await viewport.requestFullscreen();
+		},
+		isFullscreenAvailable: document.fullscreenEnabled,
+		destroy: () => {
+			observer.disconnect();
+			viewport.removeEventListener('pointermove', showCursorTemporarily);
+			document.removeEventListener('fullscreenchange', handleFullscreenChange);
+			if (cursorTimer !== null) window.clearTimeout(cursorTimer);
+		},
 	};
 }

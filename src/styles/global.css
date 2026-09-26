@@ -723,6 +723,8 @@ textarea:focus-visible {
 	background: #000;
 }
 
+.stage-viewport.is-cursor-hidden { cursor: none; }
+
 @media (max-width: 1180px) {
 	.bento-card--appearance, .bento-card--content { grid-column: span 6; }
 	.bento-card--playback { grid-column: 1 / -1; }
