@@ -1,17 +1,52 @@
 ---
-
+import BrowserFrame from '../components/BrowserFrame.astro';
+import Controls from '../components/Controls.astro';
+import RecordingStage from '../components/RecordingStage.astro';
+import '../styles/global.css';
 ---
 
-<html lang="en">
+<!doctype html>
+<html lang="es">
 	<head>
-		<meta charset="utf-8" />
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta
+			name="description"
+			content="Convierte una web real en una escena promocional animada y lista para grabar."
+		/>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>Website Promo — Crea una escena para tu web</title>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<main class="app-shell">
+			<header class="hero">
+				<div class="hero__eyebrow">
+					<span class="hero__mark" aria-hidden="true"></span>
+					Website Promo
+				</div>
+				<div class="hero__copy">
+					<h1>Tu web merece<br /><em>una buena entrada.</em></h1>
+					<p>
+						Pega una URL, personaliza la composición y crea una escena animada lista para grabar.
+					</p>
+				</div>
+			</header>
+
+			<Controls />
+			<RecordingStage>
+				<BrowserFrame />
+			</RecordingStage>
+
+			<footer class="site-footer">
+				<p>Todo ocurre en tu navegador. No subimos ni guardamos tu web.</p>
+				<span>Website Promo · v1</span>
+			</footer>
+		</main>
+
+		<script>
+			import '../scripts/editor';
+		</script>
 	</body>
 </html>

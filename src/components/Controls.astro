@@ -1,0 +1,143 @@
+<section class="controls" aria-labelledby="controls-title">
+	<div class="section-heading">
+		<div>
+			<span class="section-heading__index">01</span>
+			<h2 id="controls-title">Prepara la composición</h2>
+		</div>
+		<p>Los cambios se aplican al instante, excepto la URL.</p>
+	</div>
+
+	<div class="bento-grid">
+		<section class="bento-card bento-card--url" aria-labelledby="website-card-title">
+			<div class="card-heading">
+				<span class="card-icon card-icon--link" aria-hidden="true">
+					<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+				</span>
+				<div>
+					<span class="card-kicker">Origen</span>
+					<h3 id="website-card-title">Sitio web</h3>
+				</div>
+			</div>
+
+			<form class="url-form" data-url-form novalidate>
+				<div class="field field--url">
+					<label for="website-url">URL de la web</label>
+					<div class="url-input-wrap">
+						<span aria-hidden="true">https://</span>
+						<input
+							id="website-url"
+							name="website-url"
+							type="text"
+							inputmode="url"
+							autocomplete="url"
+							placeholder="tuportfolio.com"
+							aria-describedby="url-hint url-error"
+							data-url-input
+						/>
+					</div>
+					<p class="field-hint" id="url-hint">La cargaremos solo cuando confirmes.</p>
+					<p class="field-error" id="url-error" role="alert" data-url-error></p>
+				</div>
+				<button class="button button--primary button--load" type="submit">
+					Cargar web
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+				</button>
+			</form>
+		</section>
+
+		<section class="bento-card bento-card--appearance" aria-labelledby="appearance-card-title">
+			<div class="card-heading">
+				<span class="card-icon card-icon--palette" aria-hidden="true">
+					<svg viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10c0 2.21-1.79 4-4 4h-1.8a1.2 1.2 0 0 0-1.08 1.72l.3.62A2.55 2.55 0 0 1 13.12 22H12Z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="10" cy="6.5" r="1"/><circle cx="15" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/></svg>
+				</span>
+				<div>
+					<span class="card-kicker">Estilo</span>
+					<h3 id="appearance-card-title">Apariencia</h3>
+				</div>
+			</div>
+
+			<div class="color-fields">
+				<div class="field">
+					<label for="background-color">Fondo</label>
+					<div class="color-control">
+						<input id="background-color" type="color" value="#121212" data-background-picker />
+						<input aria-label="Color hexadecimal del fondo" type="text" value="#121212" maxlength="7" spellcheck="false" data-background-hex />
+					</div>
+				</div>
+				<div class="field">
+					<label for="text-color">Texto</label>
+					<div class="color-control">
+						<input id="text-color" type="color" value="#ffffff" data-text-picker />
+						<input aria-label="Color hexadecimal del texto" type="text" value="#FFFFFF" maxlength="7" spellcheck="false" data-text-hex />
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="bento-card bento-card--content" aria-labelledby="content-card-title">
+			<div class="card-heading">
+				<span class="card-icon card-icon--type" aria-hidden="true">
+					<svg viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+				</span>
+				<div>
+					<span class="card-kicker">Mensaje</span>
+					<h3 id="content-card-title">Contenido</h3>
+				</div>
+			</div>
+
+			<div class="content-fields">
+				<div class="field">
+					<label for="promo-title">Título</label>
+					<textarea id="promo-title" rows="3" maxlength="48" data-title-input>Website
+Promo</textarea>
+					<span class="field-counter"><span data-title-count>13</span>/48</span>
+				</div>
+				<div class="field">
+					<label for="promo-brand">Marca <span>(opcional)</span></label>
+					<input id="promo-brand" type="text" value="Tu marca" maxlength="32" data-brand-input />
+				</div>
+			</div>
+		</section>
+
+		<section class="bento-card bento-card--playback" aria-labelledby="playback-card-title">
+			<div class="card-heading">
+				<span class="card-icon card-icon--play" aria-hidden="true">
+					<svg viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></svg>
+				</span>
+				<div>
+					<span class="card-kicker">Movimiento</span>
+					<h3 id="playback-card-title">Reproducción</h3>
+				</div>
+			</div>
+
+			<div class="playback-actions" aria-label="Controles de reproducción">
+				<button class="button button--primary" type="button" data-action="play" disabled><span class="button-symbol" aria-hidden="true">▶</span> Reproducir</button>
+				<button class="button button--secondary" type="button" data-action="pause" disabled><span class="button-symbol" aria-hidden="true">Ⅱ</span> Pausar</button>
+				<button class="icon-button" type="button" aria-label="Reiniciar animación" data-action="restart" disabled>
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+				</button>
+			</div>
+
+			<div class="toggle-list">
+				<label class="toggle-row">
+					<span><strong>Sin animación</strong><small>Muestra la composición fija</small></span>
+					<input type="checkbox" data-static-toggle />
+					<span class="toggle" aria-hidden="true"></span>
+				</label>
+				<label class="toggle-row">
+					<span><strong>Cuenta atrás</strong><small>Tres segundos antes de empezar</small></span>
+					<input type="checkbox" checked data-countdown-toggle />
+					<span class="toggle" aria-hidden="true"></span>
+				</label>
+			</div>
+
+			<div class="playback-footer">
+				<button class="text-button" type="button" data-action="fullscreen" disabled>
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+					Pantalla completa
+				</button>
+				<button class="text-button text-button--muted" type="button" data-action="reset">Restablecer</button>
+			</div>
+		</section>
+	</div>
+</section>

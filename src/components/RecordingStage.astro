@@ -1,0 +1,37 @@
+<section class="preview" aria-labelledby="preview-title">
+	<div class="section-heading section-heading--preview">
+		<div>
+			<span class="section-heading__index">02</span>
+			<h2 id="preview-title">Escena para grabar</h2>
+		</div>
+		<div class="preview-status" aria-live="polite">
+			<span aria-hidden="true"></span>
+			<strong data-stage-status>Preparando controles</strong>
+		</div>
+	</div>
+
+	<div class="stage-frame">
+		<div class="stage-viewport" data-stage-viewport>
+			<div class="stage-canvas" data-stage-canvas style="--stage-background: #121212; --stage-text: #ffffff;">
+				<div class="stage-glow" aria-hidden="true"></div>
+				<div class="stage-grid" aria-hidden="true"></div>
+				<slot />
+				<div class="stage-copy" data-stage-copy>
+					<span class="stage-copy__label">Presenting</span>
+					<h2 data-stage-title>Website<br />Promo</h2>
+					<div class="stage-copy__line" aria-hidden="true"></div>
+				</div>
+				<p class="stage-brand" data-stage-brand>Tu marca</p>
+				<div class="stage-countdown" data-stage-countdown hidden aria-live="assertive"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="preview-meta">
+		<p class="embed-help">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+			¿No se muestra la web? Puede que esta dirección no permita su incrustación.
+		</p>
+		<span>Formato 16:9 · Lienzo 1920 × 1080</span>
+	</div>
+</section>
