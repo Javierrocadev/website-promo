@@ -258,7 +258,9 @@ function initializeEditor(): void {
 		urlInput.value = normalizedUrl;
 		loadWebsite(normalizedUrl);
 		updateConfig({ url: normalizedUrl });
+		if (animationController?.isAtStart()) animationController.showFinal();
 		setStatus('Web cargada');
+		updatePlaybackButtons();
 	});
 
 	titleInput.addEventListener('input', () => updateConfig({ title: titleInput.value.slice(0, 48) }));
@@ -268,7 +270,7 @@ function initializeEditor(): void {
 		cancelCountdown();
 		updateConfig({ animationEnabled: !staticToggle.checked });
 		if (staticToggle.checked) animationController?.showFinal();
-		else animationController?.reset();
+		else animationController?.showFinal();
 		setStatus(staticToggle.checked ? 'Composición fija' : 'Animación preparada');
 		updatePlaybackButtons();
 	});
@@ -280,6 +282,7 @@ function initializeEditor(): void {
 		animationController?.reset();
 		config = { ...DEFAULT_CONFIG };
 		applyConfig(config);
+		animationController?.showFinal();
 		showEmptyState();
 		urlError.textContent = '';
 		urlInput.removeAttribute('aria-invalid');
@@ -340,10 +343,9 @@ function initializeEditor(): void {
 			updatePlaybackButtons();
 		},
 	});
-	if (config.animationEnabled) animationController?.reset();
-	else animationController?.showFinal();
+	animationController?.showFinal();
 	updatePlaybackButtons();
-	setStatus(config.animationEnabled ? 'Animación preparada' : 'Composición fija');
+	setStatus(config.animationEnabled ? 'Vista previa lista' : 'Composición fija');
 
 	window.addEventListener('pagehide', () => {
 		cancelCountdown();
