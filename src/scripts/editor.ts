@@ -5,21 +5,32 @@ export interface PromoConfig {
 	url: string;
 	backgroundColor: string;
 	textColor: string;
+	presenting: string;
 	title: string;
+	brandMode: 'text' | 'logo';
 	brand: string;
+	brandLogo: string;
+	brandLogoName: string;
 	animationEnabled: boolean;
 	countdownEnabled: boolean;
 }
 
 const STORAGE_KEY = 'website-promo:config:v1';
 const HEX_COLOR = /^#[0-9A-F]{6}$/i;
+const LOGO_DATA_URL = /^data:image\/(?:png|jpeg|webp|svg\+xml);base64,/i;
+const LOGO_MIME_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']);
+const MAX_LOGO_SIZE = 1024 * 1024;
 
 export const DEFAULT_CONFIG: PromoConfig = {
 	url: '',
 	backgroundColor: '#121212',
 	textColor: '#FFFFFF',
+	presenting: 'Presenting',
 	title: 'Website\nPromo',
+	brandMode: 'text',
 	brand: 'Tu marca',
+	brandLogo: '',
+	brandLogoName: '',
 	animationEnabled: true,
 	countdownEnabled: true,
 };
@@ -41,6 +52,10 @@ function readStoredConfig(): PromoConfig {
 		const parsed: unknown = JSON.parse(rawConfig);
 		if (!parsed || typeof parsed !== 'object') return { ...DEFAULT_CONFIG };
 		const candidate = parsed as Partial<PromoConfig>;
+		const storedLogo =
+			typeof candidate.brandLogo === 'string' && LOGO_DATA_URL.test(candidate.brandLogo)
+				? candidate.brandLogo
+				: DEFAULT_CONFIG.brandLogo;
 
 		return {
 			url:
@@ -55,8 +70,18 @@ function readStoredConfig(): PromoConfig {
 				typeof candidate.textColor === 'string' && HEX_COLOR.test(candidate.textColor)
 					? candidate.textColor.toUpperCase()
 					: DEFAULT_CONFIG.textColor,
+			presenting:
+				typeof candidate.presenting === 'string'
+					? candidate.presenting.slice(0, 28)
+					: DEFAULT_CONFIG.presenting,
 			title: typeof candidate.title === 'string' ? candidate.title.slice(0, 48) : DEFAULT_CONFIG.title,
+			brandMode: candidate.brandMode === 'logo' ? 'logo' : DEFAULT_CONFIG.brandMode,
 			brand: typeof candidate.brand === 'string' ? candidate.brand.slice(0, 32) : DEFAULT_CONFIG.brand,
+			brandLogo: storedLogo,
+			brandLogoName:
+				typeof candidate.brandLogoName === 'string'
+					? candidate.brandLogoName.slice(0, 120)
+					: DEFAULT_CONFIG.brandLogoName,
 			animationEnabled:
 				typeof candidate.animationEnabled === 'boolean'
 					? candidate.animationEnabled
@@ -75,11 +100,13 @@ function readStoredConfig(): PromoConfig {
 	}
 }
 
-function saveConfig(config: PromoConfig): void {
+function saveConfig(config: PromoConfig): boolean {
 	try {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+		return true;
 	} catch (error) {
 		console.warn('No se pudo guardar la configuración.', error);
+		return false;
 	}
 }
 
@@ -97,13 +124,38 @@ function normalizeUrl(value: string): string | null {
 	}
 }
 
+function readFileAsDataUrl(file: File): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.addEventListener('load', () => {
+			if (typeof reader.result === 'string') resolve(reader.result);
+			else reject(new Error('El archivo no se pudo convertir en una imagen.'));
+		});
+		reader.addEventListener('error', () => reject(reader.error ?? new Error('No se pudo leer el archivo.')));
+		reader.readAsDataURL(file);
+	});
+}
+
 function initializeEditor(): void {
 	const stageController = setupStage();
 	const stage = getElement<HTMLElement>('[data-stage-canvas]');
+	const presentingPreview = getElement<HTMLElement>('[data-stage-presenting]');
 	const titlePreview = getElement<HTMLElement>('[data-stage-title]');
 	const brandPreview = getElement<HTMLElement>('[data-stage-brand]');
+	const brandTextPreview = getElement<HTMLElement>('[data-stage-brand-text]');
+	const brandLogoPreview = getElement<HTMLImageElement>('[data-stage-brand-logo]');
+	const presentingInput = getElement<HTMLInputElement>('[data-presenting-input]');
 	const titleInput = getElement<HTMLTextAreaElement>('[data-title-input]');
 	const brandInput = getElement<HTMLInputElement>('[data-brand-input]');
+	const brandModeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-brand-mode]'));
+	const brandTextPanel = getElement<HTMLElement>('[data-brand-text-panel]');
+	const brandLogoPanel = getElement<HTMLElement>('[data-brand-logo-panel]');
+	const logoInput = getElement<HTMLInputElement>('[data-logo-input]');
+	const logoPreview = getElement<HTMLImageElement>('[data-logo-preview]');
+	const logoPlaceholder = getElement<SVGElement>('[data-logo-placeholder]');
+	const logoName = getElement<HTMLElement>('[data-logo-name]');
+	const logoError = getElement<HTMLElement>('[data-logo-error]');
+	const logoRemoveButton = getElement<HTMLButtonElement>('[data-logo-remove]');
 	const titleCount = getElement<HTMLElement>('[data-title-count]');
 	const urlForm = getElement<HTMLFormElement>('[data-url-form]');
 	const urlInput = getElement<HTMLInputElement>('[data-url-input]');
@@ -125,7 +177,7 @@ function initializeEditor(): void {
 	const countdown = getElement<HTMLElement>('[data-stage-countdown]');
 	const status = getElement<HTMLElement>('[data-stage-status]');
 
-	if (!stage || !titlePreview || !brandPreview || !titleInput || !brandInput || !urlForm || !urlInput || !urlError || !iframe || !emptyState || !browserAddress || !backgroundPicker || !backgroundHex || !textPicker || !textHex || !staticToggle || !countdownToggle || !playButton || !pauseButton || !restartButton || !fullscreenButton || !resetButton || !countdown) {
+	if (!stage || !presentingPreview || !titlePreview || !brandPreview || !brandTextPreview || !brandLogoPreview || !presentingInput || !titleInput || !brandInput || brandModeButtons.length !== 2 || !brandTextPanel || !brandLogoPanel || !logoInput || !logoPreview || !logoPlaceholder || !logoName || !logoError || !logoRemoveButton || !urlForm || !urlInput || !urlError || !iframe || !emptyState || !browserAddress || !backgroundPicker || !backgroundHex || !textPicker || !textHex || !staticToggle || !countdownToggle || !playButton || !pauseButton || !restartButton || !fullscreenButton || !resetButton || !countdown) {
 		console.warn('No se pudo inicializar el editor: faltan elementos de la interfaz.');
 		stageController?.destroy();
 		return;
@@ -206,11 +258,29 @@ function initializeEditor(): void {
 			'--stage-title-size',
 			config.title.length > 32 ? '82px' : config.title.length > 20 ? '96px' : '112px',
 		);
+		presentingPreview.textContent = config.presenting || ' ';
 		titlePreview.textContent = config.title || ' ';
-		brandPreview.textContent = config.brand.trim();
-		brandPreview.hidden = config.brand.trim().length === 0;
+		const showingLogo = config.brandMode === 'logo';
+		brandTextPreview.textContent = config.brand.trim();
+		brandTextPreview.hidden = showingLogo;
+		brandLogoPreview.hidden = !showingLogo || !config.brandLogo;
+		if (config.brandLogo) brandLogoPreview.src = config.brandLogo;
+		else brandLogoPreview.removeAttribute('src');
+		brandPreview.hidden = showingLogo ? !config.brandLogo : config.brand.trim().length === 0;
+		presentingInput.value = config.presenting;
 		titleInput.value = config.title;
 		brandInput.value = config.brand;
+		brandModeButtons.forEach((button) => {
+			button.setAttribute('aria-pressed', String(button.dataset.brandMode === config.brandMode));
+		});
+		brandTextPanel.hidden = showingLogo;
+		brandLogoPanel.hidden = !showingLogo;
+		logoPreview.hidden = !config.brandLogo;
+		logoPlaceholder.toggleAttribute('hidden', Boolean(config.brandLogo));
+		if (config.brandLogo) logoPreview.src = config.brandLogo;
+		else logoPreview.removeAttribute('src');
+		logoName.textContent = config.brandLogoName || 'Seleccionar logo';
+		logoRemoveButton.hidden = !config.brandLogo;
 		urlInput.value = config.url;
 		backgroundPicker.value = config.backgroundColor.toLowerCase();
 		backgroundHex.value = config.backgroundColor;
@@ -224,9 +294,9 @@ function initializeEditor(): void {
 		updatePlaybackButtons();
 	};
 
-	const updateConfig = (partial: Partial<PromoConfig>) => {
+	const updateConfig = (partial: Partial<PromoConfig>): boolean => {
 		applyConfig({ ...config, ...partial });
-		saveConfig(config);
+		return saveConfig(config);
 	};
 
 	const bindColorControls = (picker: HTMLInputElement, hexInput: HTMLInputElement, property: 'backgroundColor' | 'textColor') => {
@@ -263,8 +333,58 @@ function initializeEditor(): void {
 		updatePlaybackButtons();
 	});
 
+	presentingInput.addEventListener('input', () => updateConfig({ presenting: presentingInput.value.slice(0, 28) }));
 	titleInput.addEventListener('input', () => updateConfig({ title: titleInput.value.slice(0, 48) }));
 	brandInput.addEventListener('input', () => updateConfig({ brand: brandInput.value.slice(0, 32) }));
+
+	brandModeButtons.forEach((button) => {
+		button.addEventListener('click', () => {
+			const mode = button.dataset.brandMode;
+			if (mode !== 'text' && mode !== 'logo') return;
+			updateConfig({ brandMode: mode });
+			setStatus(mode === 'logo' ? 'Modo logo activo' : 'Modo texto activo');
+		});
+	});
+
+	logoInput.addEventListener('change', async () => {
+		logoError.textContent = '';
+		const file = logoInput.files?.[0];
+		if (!file) return;
+
+		if (!LOGO_MIME_TYPES.has(file.type)) {
+			logoError.textContent = 'Usa un archivo PNG, JPG, WebP o SVG.';
+			logoInput.value = '';
+			return;
+		}
+		if (file.size > MAX_LOGO_SIZE) {
+			logoError.textContent = 'El logo supera el límite de 1 MB.';
+			logoInput.value = '';
+			return;
+		}
+
+		try {
+			const dataUrl = await readFileAsDataUrl(file);
+			if (!LOGO_DATA_URL.test(dataUrl)) throw new Error('El formato del logo no es válido.');
+			const persisted = updateConfig({
+				brandMode: 'logo',
+				brandLogo: dataUrl,
+				brandLogoName: file.name,
+			});
+			if (!persisted) logoError.textContent = 'El logo se muestra, pero no se pudo guardar para la próxima visita.';
+			setStatus('Logo cargado');
+		} catch (error) {
+			console.warn('No se pudo cargar el logo.', error);
+			logoError.textContent = 'No se pudo leer este archivo como logo.';
+		} finally {
+			logoInput.value = '';
+		}
+	});
+
+	logoRemoveButton.addEventListener('click', () => {
+		logoError.textContent = '';
+		updateConfig({ brandLogo: '', brandLogoName: '' });
+		setStatus('Logo eliminado');
+	});
 
 	staticToggle.addEventListener('change', () => {
 		cancelCountdown();

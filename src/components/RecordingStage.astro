@@ -17,11 +17,14 @@
 				<div class="stage-grid" aria-hidden="true"></div>
 				<slot />
 				<div class="stage-copy" data-stage-copy>
-					<span class="stage-copy__label">Presenting</span>
+					<span class="stage-copy__label" data-stage-presenting>Presenting</span>
 					<h2 data-stage-title>Website<br />Promo</h2>
 					<div class="stage-copy__line" aria-hidden="true"></div>
 				</div>
-				<p class="stage-brand" data-stage-brand>Tu marca</p>
+				<div class="stage-brand" data-stage-brand>
+					<span data-stage-brand-text>Tu marca</span>
+					<img data-stage-brand-logo alt="" hidden />
+				</div>
 				<div class="stage-countdown" data-stage-countdown hidden aria-live="assertive"></div>
 			</div>
 		</div>
