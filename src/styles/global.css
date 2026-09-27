@@ -78,7 +78,15 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .editor-grid { background: #fff; }
 .design-panel { min-width: 0; padding: 22px; }
 .design-panel { background: var(--surface); }
-.design-grid { display: grid; grid-template-columns: .85fr 1.15fr 1fr; gap: 18px; }
+.design-disclosure summary { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 48px; padding: 0 2px; cursor: pointer; list-style: none; }
+.design-disclosure summary::-webkit-details-marker { display: none; }
+.design-disclosure summary > span { display: grid; gap: 2px; }
+.design-disclosure summary strong { font-size: .92rem; font-weight: 850; letter-spacing: -.02em; }
+.design-disclosure summary small { color: var(--muted); font-size: .68rem; font-weight: 650; }
+.design-disclosure summary::after { display: grid; flex: 0 0 auto; place-items: center; width: 32px; height: 32px; border-radius: 5px; color: #fff; background: var(--ink); content: "+"; font-size: 1.25rem; font-weight: 500; line-height: 1; }
+.design-disclosure[open] summary::after { content: "−"; }
+.design-disclosure summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+.design-grid { display: grid; grid-template-columns: .85fr 1.15fr 1fr; gap: 18px; margin-top: 16px; }
 .design-section { min-width: 0; padding-top: 12px; border-top: 2px solid var(--ink); }
 .design-section h4 { margin: 0 0 12px; font-size: .72rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
 
