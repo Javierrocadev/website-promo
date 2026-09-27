@@ -11,6 +11,7 @@ export interface PromoConfig {
 	brand: string;
 	brandLogo: string;
 	brandLogoName: string;
+	deviceMode: 'desktop' | 'mobile';
 	animationEnabled: boolean;
 	countdownEnabled: boolean;
 }
@@ -31,6 +32,7 @@ export const DEFAULT_CONFIG: PromoConfig = {
 	brand: 'Tu marca',
 	brandLogo: '',
 	brandLogoName: '',
+	deviceMode: 'desktop',
 	animationEnabled: true,
 	countdownEnabled: true,
 };
@@ -82,6 +84,7 @@ function readStoredConfig(): PromoConfig {
 				typeof candidate.brandLogoName === 'string'
 					? candidate.brandLogoName.slice(0, 120)
 					: DEFAULT_CONFIG.brandLogoName,
+			deviceMode: candidate.deviceMode === 'mobile' ? 'mobile' : DEFAULT_CONFIG.deviceMode,
 			animationEnabled:
 				typeof candidate.animationEnabled === 'boolean'
 					? candidate.animationEnabled
@@ -148,6 +151,7 @@ function initializeEditor(): void {
 	const titleInput = getElement<HTMLTextAreaElement>('[data-title-input]');
 	const brandInput = getElement<HTMLInputElement>('[data-brand-input]');
 	const brandModeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-brand-mode]'));
+	const deviceModeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-device-mode]'));
 	const brandTextPanel = getElement<HTMLElement>('[data-brand-text-panel]');
 	const brandLogoPanel = getElement<HTMLElement>('[data-brand-logo-panel]');
 	const logoInput = getElement<HTMLInputElement>('[data-logo-input]');
@@ -178,7 +182,7 @@ function initializeEditor(): void {
 	const countdown = getElement<HTMLElement>('[data-stage-countdown]');
 	const status = getElement<HTMLElement>('[data-stage-status]');
 
-	if (!stage || !presentingPreview || !titlePreview || !brandPreview || !brandTextPreview || !brandLogoPreview || !presentingInput || !titleInput || !brandInput || brandModeButtons.length !== 2 || !brandTextPanel || !brandLogoPanel || !logoInput || !logoPreview || !logoPlaceholder || !logoName || !logoError || !logoRemoveButton || !urlForm || !urlInput || !urlError || iframes.length !== 2 || emptyStates.length !== 2 || !browserAddress || !backgroundPicker || !backgroundHex || !textPicker || !textHex || !staticToggle || !countdownToggle || !playButton || !pauseButton || !restartButton || !fullscreenButton || !resetButton || !countdown) {
+	if (!stage || !presentingPreview || !titlePreview || !brandPreview || !brandTextPreview || !brandLogoPreview || !presentingInput || !titleInput || !brandInput || brandModeButtons.length !== 2 || deviceModeButtons.length !== 2 || !brandTextPanel || !brandLogoPanel || !logoInput || !logoPreview || !logoPlaceholder || !logoName || !logoError || !logoRemoveButton || !urlForm || !urlInput || !urlError || iframes.length !== 2 || emptyStates.length !== 2 || !browserAddress || !backgroundPicker || !backgroundHex || !textPicker || !textHex || !staticToggle || !countdownToggle || !playButton || !pauseButton || !restartButton || !fullscreenButton || !resetButton || !countdown) {
 		console.warn('No se pudo inicializar el editor: faltan elementos de la interfaz.');
 		stageController?.destroy();
 		return;
@@ -263,6 +267,7 @@ function initializeEditor(): void {
 		config = nextConfig;
 		stage.style.setProperty('--stage-background', config.backgroundColor);
 		stage.style.setProperty('--stage-text', config.textColor);
+		stage.dataset.deviceMode = config.deviceMode;
 		stage.style.setProperty(
 			'--stage-title-size',
 			config.title.length > 32 ? '82px' : config.title.length > 20 ? '96px' : '112px',
@@ -281,6 +286,9 @@ function initializeEditor(): void {
 		brandInput.value = config.brand;
 		brandModeButtons.forEach((button) => {
 			button.setAttribute('aria-pressed', String(button.dataset.brandMode === config.brandMode));
+		});
+		deviceModeButtons.forEach((button) => {
+			button.setAttribute('aria-pressed', String(button.dataset.deviceMode === config.deviceMode));
 		});
 		brandTextPanel.hidden = showingLogo;
 		brandLogoPanel.hidden = !showingLogo;
@@ -358,6 +366,15 @@ function initializeEditor(): void {
 			if (mode !== 'text' && mode !== 'logo') return;
 			updateConfig({ brandMode: mode });
 			setStatus(mode === 'logo' ? 'Modo logo activo' : 'Modo texto activo');
+		});
+	});
+
+	deviceModeButtons.forEach((button) => {
+		button.addEventListener('click', () => {
+			const mode = button.dataset.deviceMode;
+			if (mode !== 'desktop' && mode !== 'mobile') return;
+			updateConfig({ deviceMode: mode });
+			setStatus(mode === 'mobile' ? 'Vista móvil activa' : 'Vista de escritorio activa');
 		});
 	});
 

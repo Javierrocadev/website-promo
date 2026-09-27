@@ -87,6 +87,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .design-disclosure[open] summary::after { content: "−"; }
 .design-disclosure summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
 .design-grid { display: grid; grid-template-columns: .85fr 1.15fr 1fr; gap: 18px; margin-top: 16px; }
+.design-section--device { grid-column: 1 / -1; }
 .design-section { min-width: 0; padding-top: 12px; border-top: 2px solid var(--ink); }
 .design-section h4 { margin: 0 0 12px; font-size: .72rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
 
@@ -249,6 +250,11 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .mobile-empty strong { font-size: 22px; letter-spacing: -.035em; }
 .mobile-empty > span { margin-top: 8px; color: #6b7280; font-size: 13px; line-height: 1.35; }
 .mobile-home { position: absolute; bottom: 7px; left: 50%; width: 74px; height: 5px; border-radius: 5px; background: #4b5563; transform: translateX(-50%); }
+.stage-canvas[data-device-mode="desktop"] .mobile-perspective { display: none; }
+.stage-canvas[data-device-mode="mobile"] .browser-perspective { display: none; }
+.stage-canvas[data-device-mode="mobile"] .mobile-perspective { top: 142px; left: 342px; width: 390px; height: 782px; }
+.stage-canvas[data-device-mode="mobile"] .stage-copy { left: 1020px; width: 590px; }
+.stage-canvas[data-device-mode="mobile"] .stage-brand { right: 180px; }
 
 .stage-copy { position: absolute; top: 292px; left: 1338px; width: 440px; z-index: 3; }
 .stage-copy__label { display: block; margin-bottom: 27px; color: var(--stage-text); font-size: 17px; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; opacity: .58; }

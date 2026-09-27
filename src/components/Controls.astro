@@ -6,10 +6,17 @@
 					<summary>
 						<span>
 							<strong>Personalizar diseño</strong>
-							<small>Color, texto y firma</small>
+							<small>Pantalla, color, texto y firma</small>
 						</span>
 					</summary>
 					<div class="design-grid">
+					<div class="design-section design-section--device">
+						<h4>Pantalla</h4>
+						<div class="segmented-control" role="group" aria-label="Tipo de pantalla">
+							<button type="button" aria-pressed="true" data-device-mode="desktop">Escritorio</button>
+							<button type="button" aria-pressed="false" data-device-mode="mobile">Móvil</button>
+						</div>
+					</div>
 					<div class="design-section design-section--colors">
 						<h4>Color</h4>
 						<div class="color-presets" role="group" aria-label="Combinaciones de color">
