@@ -1,5 +1,6 @@
 <section class="preview" aria-label="Escena para grabar">
-	<section class="recording-controls" aria-labelledby="playback-group-title">
+	<div class="fullscreen-stage" data-stage-fullscreen>
+	<section class="recording-controls" aria-labelledby="playback-group-title" data-fullscreen-controls>
 		<div class="recording-controls__intro">
 			<h3 id="playback-group-title">Reproducción</h3>
 			<div class="recording-status" aria-live="polite">
@@ -37,6 +38,9 @@
 			<button class="text-button text-button--muted" type="button" data-action="reset">Restablecer</button>
 		</div>
 	</section>
+	<button class="fullscreen-controls-handle" type="button" aria-label="Mostrar controles de reproducción" data-fullscreen-controls-handle>
+		<span aria-hidden="true"></span>
+	</button>
 
 	<div class="stage-frame">
 		<div class="stage-viewport" data-stage-viewport>
@@ -56,6 +60,7 @@
 				<div class="stage-countdown" data-stage-countdown hidden aria-live="assertive"></div>
 			</div>
 		</div>
+	</div>
 	</div>
 
 	<div class="preview-meta">
