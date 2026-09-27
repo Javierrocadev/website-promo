@@ -160,8 +160,8 @@ function initializeEditor(): void {
 	const urlForm = getElement<HTMLFormElement>('[data-url-form]');
 	const urlInput = getElement<HTMLInputElement>('[data-url-input]');
 	const urlError = getElement<HTMLElement>('[data-url-error]');
-	const iframe = getElement<HTMLIFrameElement>('[data-browser-iframe]');
-	const emptyState = getElement<HTMLElement>('[data-browser-empty]');
+	const iframes = Array.from(document.querySelectorAll<HTMLIFrameElement>('[data-browser-iframe]'));
+	const emptyStates = Array.from(document.querySelectorAll<HTMLElement>('[data-browser-empty]'));
 	const browserAddress = getElement<HTMLElement>('[data-browser-address]');
 	const backgroundPicker = getElement<HTMLInputElement>('[data-background-picker]');
 	const backgroundHex = getElement<HTMLInputElement>('[data-background-hex]');
@@ -178,7 +178,7 @@ function initializeEditor(): void {
 	const countdown = getElement<HTMLElement>('[data-stage-countdown]');
 	const status = getElement<HTMLElement>('[data-stage-status]');
 
-	if (!stage || !presentingPreview || !titlePreview || !brandPreview || !brandTextPreview || !brandLogoPreview || !presentingInput || !titleInput || !brandInput || brandModeButtons.length !== 2 || !brandTextPanel || !brandLogoPanel || !logoInput || !logoPreview || !logoPlaceholder || !logoName || !logoError || !logoRemoveButton || !urlForm || !urlInput || !urlError || !iframe || !emptyState || !browserAddress || !backgroundPicker || !backgroundHex || !textPicker || !textHex || !staticToggle || !countdownToggle || !playButton || !pauseButton || !restartButton || !fullscreenButton || !resetButton || !countdown) {
+	if (!stage || !presentingPreview || !titlePreview || !brandPreview || !brandTextPreview || !brandLogoPreview || !presentingInput || !titleInput || !brandInput || brandModeButtons.length !== 2 || !brandTextPanel || !brandLogoPanel || !logoInput || !logoPreview || !logoPlaceholder || !logoName || !logoError || !logoRemoveButton || !urlForm || !urlInput || !urlError || iframes.length !== 2 || emptyStates.length !== 2 || !browserAddress || !backgroundPicker || !backgroundHex || !textPicker || !textHex || !staticToggle || !countdownToggle || !playButton || !pauseButton || !restartButton || !fullscreenButton || !resetButton || !countdown) {
 		console.warn('No se pudo inicializar el editor: faltan elementos de la interfaz.');
 		stageController?.destroy();
 		return;
@@ -238,16 +238,24 @@ function initializeEditor(): void {
 	};
 
 	const showEmptyState = () => {
-		iframe.hidden = true;
-		iframe.removeAttribute('src');
-		emptyState.hidden = false;
+		iframes.forEach((iframe) => {
+			iframe.hidden = true;
+			iframe.removeAttribute('src');
+		});
+		emptyStates.forEach((emptyState) => {
+			emptyState.hidden = false;
+		});
 		browserAddress.textContent = 'tuportfolio.com';
 	};
 
 	const loadWebsite = (url: string) => {
-		iframe.src = url;
-		iframe.hidden = false;
-		emptyState.hidden = true;
+		iframes.forEach((iframe) => {
+			iframe.src = url;
+			iframe.hidden = false;
+		});
+		emptyStates.forEach((emptyState) => {
+			emptyState.hidden = true;
+		});
 		browserAddress.textContent = new URL(url).hostname.replace(/^www\./, '');
 	};
 
