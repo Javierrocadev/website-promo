@@ -38,18 +38,31 @@ export function setupStage(): StageController | null {
 	let cursorTimer: number | null = null;
 	let controlsTimer: number | null = null;
 	let closeTimer: number | null = null;
+	let handleTimer: number | null = null;
 
 	const clearControlsTimers = () => {
 		if (controlsTimer !== null) window.clearTimeout(controlsTimer);
 		if (closeTimer !== null) window.clearTimeout(closeTimer);
+		if (handleTimer !== null) window.clearTimeout(handleTimer);
 		controlsTimer = null;
 		closeTimer = null;
+		handleTimer = null;
+	};
+
+	const showHandleTemporarily = () => {
+		fullscreenTarget.classList.remove('is-handle-hidden');
+		if (handleTimer !== null) window.clearTimeout(handleTimer);
+		handleTimer = window.setTimeout(() => {
+			fullscreenTarget.classList.add('is-handle-hidden');
+			handleTimer = null;
+		}, 650);
 	};
 
 	const collapseControls = () => {
 		if (document.fullscreenElement !== fullscreenTarget) return;
 		fullscreenTarget.classList.remove('is-controls-peek');
 		fullscreenTarget.classList.add('is-controls-collapsed');
+		showHandleTemporarily();
 	};
 
 	const revealControls = () => {
@@ -64,6 +77,7 @@ export function setupStage(): StageController | null {
 		if (closeTimer !== null) window.clearTimeout(closeTimer);
 		closeTimer = window.setTimeout(() => {
 			fullscreenTarget.classList.remove('is-controls-peek');
+			showHandleTemporarily();
 			closeTimer = null;
 		}, 140);
 	};
@@ -73,6 +87,7 @@ export function setupStage(): StageController | null {
 		if (closeTimer !== null) window.clearTimeout(closeTimer);
 		closeTimer = window.setTimeout(() => {
 			fullscreenTarget.classList.remove('is-controls-peek');
+			showHandleTemporarily();
 			closeTimer = null;
 		}, 1600);
 	};
@@ -92,10 +107,10 @@ export function setupStage(): StageController | null {
 	const handleFullscreenChange = () => {
 		clearControlsTimers();
 		if (document.fullscreenElement === fullscreenTarget) {
-			fullscreenTarget.classList.remove('is-controls-collapsed', 'is-controls-peek');
+			fullscreenTarget.classList.remove('is-controls-collapsed', 'is-controls-peek', 'is-handle-hidden');
 			controlsTimer = window.setTimeout(collapseControls, 1300);
 		} else {
-			fullscreenTarget.classList.remove('is-controls-collapsed', 'is-controls-peek', 'is-cursor-hidden');
+			fullscreenTarget.classList.remove('is-controls-collapsed', 'is-controls-peek', 'is-handle-hidden', 'is-cursor-hidden');
 		}
 		showCursorTemporarily();
 		window.requestAnimationFrame(refresh);

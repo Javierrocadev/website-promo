@@ -254,6 +254,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .fullscreen-stage:fullscreen .fullscreen-controls-handle { position: absolute; top: 18px; right: 18px; display: grid; place-items: center; width: 42px; height: 42px; padding: 0; border: 2px solid rgb(255 255 255 / 72%); border-radius: 50%; background: rgb(17 24 39 / 88%); box-shadow: 0 8px 24px rgb(0 0 0 / 36%); opacity: 0; pointer-events: none; transform: scale(.65); transition: opacity 150ms ease 100ms, transform 180ms ease 80ms; z-index: 21; }
 .fullscreen-stage:fullscreen .fullscreen-controls-handle span { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px rgb(245 158 11 / 16%); }
 .fullscreen-stage:fullscreen.is-controls-collapsed .fullscreen-controls-handle { opacity: .82; pointer-events: auto; transform: scale(1); }
+.fullscreen-stage:fullscreen.is-controls-collapsed.is-handle-hidden .fullscreen-controls-handle { opacity: 0; pointer-events: auto; transform: scale(.72); transition-delay: 0ms; }
 .fullscreen-stage:fullscreen.is-controls-peek .fullscreen-controls-handle { opacity: 0; pointer-events: none; transform: scale(.65); transition-delay: 0ms; }
 .fullscreen-stage:fullscreen.is-cursor-hidden { cursor: none; }
 
