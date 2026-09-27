@@ -167,6 +167,7 @@ function initializeEditor(): void {
 	const backgroundHex = getElement<HTMLInputElement>('[data-background-hex]');
 	const textPicker = getElement<HTMLInputElement>('[data-text-picker]');
 	const textHex = getElement<HTMLInputElement>('[data-text-hex]');
+	const colorPresetButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-color-background][data-color-text]'));
 	const staticToggle = getElement<HTMLInputElement>('[data-static-toggle]');
 	const countdownToggle = getElement<HTMLInputElement>('[data-countdown-toggle]');
 	const playButton = getElement<HTMLButtonElement>('[data-action="play"]');
@@ -286,6 +287,12 @@ function initializeEditor(): void {
 		backgroundHex.value = config.backgroundColor;
 		textPicker.value = config.textColor.toLowerCase();
 		textHex.value = config.textColor;
+		colorPresetButtons.forEach((button) => {
+			const isSelected =
+				button.dataset.colorBackground === config.backgroundColor &&
+				button.dataset.colorText === config.textColor;
+			button.setAttribute('aria-pressed', String(isSelected));
+		});
 		staticToggle.checked = !config.animationEnabled;
 		countdownToggle.checked = config.countdownEnabled;
 		countdownToggle.disabled = !config.animationEnabled;
@@ -456,6 +463,15 @@ function initializeEditor(): void {
 
 	bindColorControls(backgroundPicker, backgroundHex, 'backgroundColor');
 	bindColorControls(textPicker, textHex, 'textColor');
+	colorPresetButtons.forEach((button) => {
+		button.addEventListener('click', () => {
+			const backgroundColor = button.dataset.colorBackground;
+			const textColor = button.dataset.colorText;
+			if (!backgroundColor || !textColor || !HEX_COLOR.test(backgroundColor) || !HEX_COLOR.test(textColor)) return;
+			updateConfig({ backgroundColor, textColor });
+			setStatus('Combinación de color aplicada');
+		});
+	});
 	applyConfig(config, true);
 	animationController = setupPromoAnimation({
 		onComplete: () => {
