@@ -207,7 +207,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .stage-grid { position: absolute; top: 0; bottom: 0; left: 1288px; width: 6px; background: var(--stage-text); opacity: .09; }
 
 .browser-perspective { position: absolute; top: 176px; left: 112px; width: 1140px; height: 728px; perspective: 2200px; z-index: 2; }
-.browser-frame { width: 100%; height: 100%; overflow: hidden; border: 3px solid #111827; border-radius: 14px; background: #f3f4f6; transform: rotateY(8deg) rotateX(1deg) rotateZ(-.6deg); transform-origin: 50% 50%; }
+.browser-frame { width: 100%; height: 100%; overflow: hidden; border: 0; border-radius: 14px; background: transparent; transform: rotateY(8deg) rotateX(1deg) rotateZ(-.6deg); transform-origin: 50% 50%; }
 .browser-bar { display: grid; grid-template-columns: 150px 1fr 150px; align-items: center; height: 70px; padding: 0 24px; border-bottom: 2px solid #111827; background: #f3f4f6; }
 .browser-dots { display: flex; gap: 8px; }
 .browser-dots span { width: 13px; height: 13px; border-radius: 2px; }
@@ -218,8 +218,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .browser-address svg { width: 15px; height: 15px; fill: none; stroke: currentcolor; stroke-width: 1.7; }
 .browser-menu { display: flex; justify-content: flex-end; gap: 4px; }
 .browser-menu span { width: 4px; height: 4px; border-radius: 0; background: #737b87; }
-.browser-content { position: relative; height: calc(100% - 70px); background: #fff; }
-.browser-content iframe { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+.browser-content { position: relative; height: calc(100% - 70px); overflow: hidden; background: transparent; }
+.browser-content iframe { position: absolute; inset: -1px; display: block; width: calc(100% + 2px); height: calc(100% + 2px); border: 0; background: transparent; }
 .browser-content iframe[hidden] { display: none; }
 .browser-empty { display: flex; align-items: center; justify-content: center; flex-direction: column; height: 100%; color: var(--ink); background: #fff; }
 .browser-empty[hidden] { display: none; }
