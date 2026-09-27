@@ -66,14 +66,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .hero h1 { margin: 0; max-width: 820px; font-size: clamp(3rem, 5.5vw, 5.8rem); font-weight: 800; line-height: .86; letter-spacing: -.07em; text-transform: uppercase; }
 .hero__copy p { max-width: 360px; margin: 0 88px 0 0; padding-top: 12px; border-top: 3px solid var(--ink); font-size: clamp(.88rem, 1.1vw, 1.05rem); font-weight: 650; line-height: 1.4; }
 
-.controls { margin-top: 52px; }
-.preview { margin-top: 72px; }
-.section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; padding: 0 0 14px; border-bottom: 2px solid var(--ink); }
-.section-heading > div:first-child { display: flex; align-items: baseline; gap: 14px; }
-.section-heading__index, .card-kicker { font-size: .68rem; font-weight: 850; letter-spacing: .14em; text-transform: uppercase; }
-.section-heading__index { color: var(--primary); }
-.section-heading h2 { margin: 0; font-size: clamp(1.5rem, 2.1vw, 2.15rem); font-weight: 800; letter-spacing: -.045em; }
-.section-heading > p { margin: 0 0 4px; color: var(--muted); font-size: .82rem; font-weight: 600; }
+.controls { margin-top: 28px; }
+.preview { margin-top: 36px; }
 
 .editor-panel { margin-top: 12px; overflow: hidden; border-radius: var(--radius); background: var(--surface); }
 .url-strip { padding: 20px 22px; background: var(--primary); }
@@ -176,14 +170,12 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .text-button svg { width: 16px; height: 16px; }
 .text-button--muted { color: rgb(255 255 255 / 62%); }
 
-.preview { margin-top: 72px; }
-.section-heading--preview { align-items: center; }
 .recording-controls {
 	display: grid;
 	grid-template-columns: minmax(150px, .8fr) minmax(320px, 1.35fr) minmax(310px, 1.2fr) minmax(230px, 1fr);
 	align-items: center;
 	gap: 24px;
-	margin-top: 12px;
+	margin-top: 0;
 	padding: 16px 18px;
 	border-radius: var(--radius);
 	color: #fff;
@@ -258,11 +250,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 	.hero__copy { grid-template-columns: 1fr; gap: 20px; }
 	.hero h1 { max-width: 620px; font-size: clamp(3.2rem, 12vw, 5rem); }
 	.hero__copy p { max-width: 330px; margin-right: 0; }
-	.controls { margin-top: 46px; }
-	.preview { margin-top: 60px; }
-	.section-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
-	.section-heading--preview { flex-direction: row; align-items: center; }
-	.section-heading > p { padding-left: 34px; }
+	.controls { margin-top: 24px; }
+	.preview { margin-top: 32px; }
 	.design-grid { grid-template-columns: 1fr 1fr; }
 	.design-section--brand { grid-column: 1 / -1; }
 	.recording-controls { grid-template-columns: 1fr 1fr; gap: 16px 22px; }
