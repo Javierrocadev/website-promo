@@ -1,11 +1,6 @@
-<section class="preview" aria-labelledby="preview-title">
-	<div class="section-heading section-heading--preview">
-		<div>
-			<h2 id="preview-title">Escena para grabar</h2>
-		</div>
-	</div>
-
-	<section class="recording-controls" aria-labelledby="playback-group-title">
+<section class="preview" aria-label="Escena para grabar">
+	<div class="fullscreen-stage" data-stage-fullscreen>
+	<section class="recording-controls" aria-labelledby="playback-group-title" data-fullscreen-controls>
 		<div class="recording-controls__intro">
 			<h3 id="playback-group-title">Reproducción</h3>
 			<div class="recording-status" aria-live="polite">
@@ -43,6 +38,9 @@
 			<button class="text-button text-button--muted" type="button" data-action="reset">Restablecer</button>
 		</div>
 	</section>
+	<button class="fullscreen-controls-handle" type="button" aria-label="Mostrar controles de reproducción" data-fullscreen-controls-handle>
+		<span aria-hidden="true"></span>
+	</button>
 
 	<div class="stage-frame">
 		<div class="stage-viewport" data-stage-viewport>
@@ -63,12 +61,13 @@
 			</div>
 		</div>
 	</div>
+	</div>
 
 	<div class="preview-meta">
 		<p class="embed-help">
 			<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
 			¿No se muestra la web? Puede que esta dirección no permita su incrustación.
 		</p>
-		<span>Formato 16:9 · Lienzo 1920 × 1080</span>
+		<span>Escritorio o móvil · Lienzo 1920 × 1080</span>
 	</div>
 </section>

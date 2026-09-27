@@ -11,6 +11,7 @@ export interface PromoConfig {
 	brand: string;
 	brandLogo: string;
 	brandLogoName: string;
+	deviceMode: 'desktop' | 'mobile';
 	animationEnabled: boolean;
 	countdownEnabled: boolean;
 }
@@ -31,6 +32,7 @@ export const DEFAULT_CONFIG: PromoConfig = {
 	brand: 'Tu marca',
 	brandLogo: '',
 	brandLogoName: '',
+	deviceMode: 'desktop',
 	animationEnabled: true,
 	countdownEnabled: true,
 };
@@ -82,6 +84,7 @@ function readStoredConfig(): PromoConfig {
 				typeof candidate.brandLogoName === 'string'
 					? candidate.brandLogoName.slice(0, 120)
 					: DEFAULT_CONFIG.brandLogoName,
+			deviceMode: candidate.deviceMode === 'mobile' ? 'mobile' : DEFAULT_CONFIG.deviceMode,
 			animationEnabled:
 				typeof candidate.animationEnabled === 'boolean'
 					? candidate.animationEnabled
@@ -148,6 +151,7 @@ function initializeEditor(): void {
 	const titleInput = getElement<HTMLTextAreaElement>('[data-title-input]');
 	const brandInput = getElement<HTMLInputElement>('[data-brand-input]');
 	const brandModeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-brand-mode]'));
+	const deviceModeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-device-mode]'));
 	const brandTextPanel = getElement<HTMLElement>('[data-brand-text-panel]');
 	const brandLogoPanel = getElement<HTMLElement>('[data-brand-logo-panel]');
 	const logoInput = getElement<HTMLInputElement>('[data-logo-input]');
@@ -160,13 +164,14 @@ function initializeEditor(): void {
 	const urlForm = getElement<HTMLFormElement>('[data-url-form]');
 	const urlInput = getElement<HTMLInputElement>('[data-url-input]');
 	const urlError = getElement<HTMLElement>('[data-url-error]');
-	const iframe = getElement<HTMLIFrameElement>('[data-browser-iframe]');
-	const emptyState = getElement<HTMLElement>('[data-browser-empty]');
+	const iframes = Array.from(document.querySelectorAll<HTMLIFrameElement>('[data-browser-iframe]'));
+	const emptyStates = Array.from(document.querySelectorAll<HTMLElement>('[data-browser-empty]'));
 	const browserAddress = getElement<HTMLElement>('[data-browser-address]');
 	const backgroundPicker = getElement<HTMLInputElement>('[data-background-picker]');
 	const backgroundHex = getElement<HTMLInputElement>('[data-background-hex]');
 	const textPicker = getElement<HTMLInputElement>('[data-text-picker]');
 	const textHex = getElement<HTMLInputElement>('[data-text-hex]');
+	const colorPresetButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-color-background][data-color-text]'));
 	const staticToggle = getElement<HTMLInputElement>('[data-static-toggle]');
 	const countdownToggle = getElement<HTMLInputElement>('[data-countdown-toggle]');
 	const playButton = getElement<HTMLButtonElement>('[data-action="play"]');
@@ -177,7 +182,7 @@ function initializeEditor(): void {
 	const countdown = getElement<HTMLElement>('[data-stage-countdown]');
 	const status = getElement<HTMLElement>('[data-stage-status]');
 
-	if (!stage || !presentingPreview || !titlePreview || !brandPreview || !brandTextPreview || !brandLogoPreview || !presentingInput || !titleInput || !brandInput || brandModeButtons.length !== 2 || !brandTextPanel || !brandLogoPanel || !logoInput || !logoPreview || !logoPlaceholder || !logoName || !logoError || !logoRemoveButton || !urlForm || !urlInput || !urlError || !iframe || !emptyState || !browserAddress || !backgroundPicker || !backgroundHex || !textPicker || !textHex || !staticToggle || !countdownToggle || !playButton || !pauseButton || !restartButton || !fullscreenButton || !resetButton || !countdown) {
+	if (!stage || !presentingPreview || !titlePreview || !brandPreview || !brandTextPreview || !brandLogoPreview || !presentingInput || !titleInput || !brandInput || brandModeButtons.length !== 2 || deviceModeButtons.length !== 2 || !brandTextPanel || !brandLogoPanel || !logoInput || !logoPreview || !logoPlaceholder || !logoName || !logoError || !logoRemoveButton || !urlForm || !urlInput || !urlError || iframes.length !== 2 || emptyStates.length !== 2 || !browserAddress || !backgroundPicker || !backgroundHex || !textPicker || !textHex || !staticToggle || !countdownToggle || !playButton || !pauseButton || !restartButton || !fullscreenButton || !resetButton || !countdown) {
 		console.warn('No se pudo inicializar el editor: faltan elementos de la interfaz.');
 		stageController?.destroy();
 		return;
@@ -237,16 +242,24 @@ function initializeEditor(): void {
 	};
 
 	const showEmptyState = () => {
-		iframe.hidden = true;
-		iframe.removeAttribute('src');
-		emptyState.hidden = false;
+		iframes.forEach((iframe) => {
+			iframe.hidden = true;
+			iframe.removeAttribute('src');
+		});
+		emptyStates.forEach((emptyState) => {
+			emptyState.hidden = false;
+		});
 		browserAddress.textContent = 'tuportfolio.com';
 	};
 
 	const loadWebsite = (url: string) => {
-		iframe.src = url;
-		iframe.hidden = false;
-		emptyState.hidden = true;
+		iframes.forEach((iframe) => {
+			iframe.src = url;
+			iframe.hidden = false;
+		});
+		emptyStates.forEach((emptyState) => {
+			emptyState.hidden = true;
+		});
 		browserAddress.textContent = new URL(url).hostname.replace(/^www\./, '');
 	};
 
@@ -254,6 +267,7 @@ function initializeEditor(): void {
 		config = nextConfig;
 		stage.style.setProperty('--stage-background', config.backgroundColor);
 		stage.style.setProperty('--stage-text', config.textColor);
+		stage.dataset.deviceMode = config.deviceMode;
 		stage.style.setProperty(
 			'--stage-title-size',
 			config.title.length > 32 ? '82px' : config.title.length > 20 ? '96px' : '112px',
@@ -273,6 +287,9 @@ function initializeEditor(): void {
 		brandModeButtons.forEach((button) => {
 			button.setAttribute('aria-pressed', String(button.dataset.brandMode === config.brandMode));
 		});
+		deviceModeButtons.forEach((button) => {
+			button.setAttribute('aria-pressed', String(button.dataset.deviceMode === config.deviceMode));
+		});
 		brandTextPanel.hidden = showingLogo;
 		brandLogoPanel.hidden = !showingLogo;
 		logoPreview.hidden = !config.brandLogo;
@@ -286,6 +303,12 @@ function initializeEditor(): void {
 		backgroundHex.value = config.backgroundColor;
 		textPicker.value = config.textColor.toLowerCase();
 		textHex.value = config.textColor;
+		colorPresetButtons.forEach((button) => {
+			const isSelected =
+				button.dataset.colorBackground === config.backgroundColor &&
+				button.dataset.colorText === config.textColor;
+			button.setAttribute('aria-pressed', String(isSelected));
+		});
 		staticToggle.checked = !config.animationEnabled;
 		countdownToggle.checked = config.countdownEnabled;
 		countdownToggle.disabled = !config.animationEnabled;
@@ -343,6 +366,15 @@ function initializeEditor(): void {
 			if (mode !== 'text' && mode !== 'logo') return;
 			updateConfig({ brandMode: mode });
 			setStatus(mode === 'logo' ? 'Modo logo activo' : 'Modo texto activo');
+		});
+	});
+
+	deviceModeButtons.forEach((button) => {
+		button.addEventListener('click', () => {
+			const mode = button.dataset.deviceMode;
+			if (mode !== 'desktop' && mode !== 'mobile') return;
+			updateConfig({ deviceMode: mode });
+			setStatus(mode === 'mobile' ? 'Vista móvil activa' : 'Vista de escritorio activa');
 		});
 	});
 
@@ -456,6 +488,15 @@ function initializeEditor(): void {
 
 	bindColorControls(backgroundPicker, backgroundHex, 'backgroundColor');
 	bindColorControls(textPicker, textHex, 'textColor');
+	colorPresetButtons.forEach((button) => {
+		button.addEventListener('click', () => {
+			const backgroundColor = button.dataset.colorBackground;
+			const textColor = button.dataset.colorText;
+			if (!backgroundColor || !textColor || !HEX_COLOR.test(backgroundColor) || !HEX_COLOR.test(textColor)) return;
+			updateConfig({ backgroundColor, textColor });
+			setStatus('Combinación de color aplicada');
+		});
+	});
 	applyConfig(config, true);
 	animationController = setupPromoAnimation({
 		onComplete: () => {
