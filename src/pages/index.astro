@@ -27,8 +27,32 @@ import '../styles/global.css';
 					Website Promo · Studio
 				</div>
 				<div class="hero__copy">
-					<h1>Presenta tu web</h1>
-					<p>Construye una escena 16:9, ajusta el mensaje y graba una entrada que se sienta tuya.</p>
+					<div class="hero__main">
+						<h1>Presenta tu web</h1>
+						<form class="url-form hero__url-form" data-url-form novalidate>
+							<div class="field field--url">
+								<label class="visually-hidden" for="website-url">URL de la web</label>
+								<div class="url-input-wrap">
+									<input
+										id="website-url"
+										name="website-url"
+										type="text"
+										inputmode="url"
+										autocomplete="url"
+										placeholder="https://tuportfolio.com"
+										aria-describedby="url-error"
+										data-url-input
+									/>
+								</div>
+								<p class="field-error" id="url-error" role="alert" data-url-error></p>
+							</div>
+							<button class="button button--primary button--load" type="submit">
+								Cargar web
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+							</button>
+						</form>
+					</div>
+					<p class="hero__description">Construye una escena 16:9, ajusta el mensaje y graba una entrada que se sienta tuya.</p>
 				</div>
 			</header>
 
